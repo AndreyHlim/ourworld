@@ -2,6 +2,7 @@ from django.conf import settings
 from django.urls import reverse
 
 import pytest
+from news.forms import CommentForm
 
 HOME_URL = reverse('news:home')
 
@@ -13,11 +14,12 @@ HOME_URL = reverse('news:home')
      (pytest.lazy_fixture('client'), False))
 )
 def test_availability_form_comment_page(
-    parametrized_client, form_comment_visible, news
+    parametrized_client, form_comment_visible, news_detail_url
 ):
-    url = reverse('news:detail', args=(news.id,))
-    response = parametrized_client.get(url)
+    response = parametrized_client.get(news_detail_url)
     assert ('form' in response.context) is form_comment_visible
+    if 'form' in response.context:
+        assert (isinstance(response.context['form'], CommentForm))
 
 
 @pytest.mark.django_db
@@ -37,9 +39,10 @@ class TestNews:
 
 
 @pytest.mark.usefixtures('comment_many')
-def test_comments_order(news, client):
-    detail_url = reverse('news:detail', args=(news.id,))
-    response = client.get(detail_url)
+def test_comments_order(news, client, news_detail_url):
+    response = client.get(news_detail_url)
     news = response.context['news']
     all_comments = news.comment_set.all()
-    assert all_comments[0].created < all_comments[1].created
+    comments_data = [comment.created for comment in all_comments]
+    sorted_comments_data = sorted(comments_data)
+    assert sorted_comments_data == comments_data

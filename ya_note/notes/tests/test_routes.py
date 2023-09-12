@@ -20,6 +20,7 @@ class TestRoutes(TestCase):
             text='Текст заметки',
             author=cls.author
         )
+        cls.login_url = reverse('users:login')
 
     def test_pages_availability(self):
         urls = (
@@ -56,7 +57,6 @@ class TestRoutes(TestCase):
                 self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_redirect_for_anonymous_client(self):
-        login_url = reverse('users:login')
         for name, args in (
             ('notes:edit', (self.notes.slug,)),
             ('notes:delete', (self.notes.slug,)),
@@ -68,6 +68,6 @@ class TestRoutes(TestCase):
 
             with self.subTest(name=name):
                 url = reverse(name, args=args)
-                redirect_url = f'{login_url}?next={url}'
+                redirect_url = f'{self.login_url}?next={url}'
                 response = self.client.get(url)
                 self.assertRedirects(response, redirect_url)

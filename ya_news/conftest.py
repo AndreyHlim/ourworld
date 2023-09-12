@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
 from django.conf import settings
+from django.urls import reverse
 from django.utils import timezone
 
 import pytest
@@ -53,7 +54,7 @@ def comment(author, news):
 @pytest.fixture
 def comment_many(author, news):
     now = timezone.now()
-    for index in range(2):
+    for index in range(10):
         comment = Comment.objects.create(
             news=news, author=author, text=f'Tекст {index}',
         )
@@ -65,6 +66,21 @@ def comment_many(author, news):
 @pytest.fixture
 def news_pk_for_args(news):
     return news.id,
+
+
+@pytest.fixture
+def news_detail_url(news):
+    return reverse('news:detail', args=(news.id,))
+
+
+@pytest.fixture
+def comment_delete_url(comment):
+    return reverse('news:delete', args=(comment.id,))
+
+
+@pytest.fixture
+def comment_edit_url(comment):
+    return reverse('news:edit', args=(comment.id,))
 
 
 @pytest.fixture

@@ -31,24 +31,28 @@ def test_pages_availability_for_anonymous_user(client, name, args):
     )
 )
 @pytest.mark.parametrize(
-    'name',
-    ('news:edit', 'news:delete'),
+    'name_url',
+    (
+        pytest.lazy_fixture('comment_edit_url'),
+        pytest.lazy_fixture('comment_delete_url')
+    )
 )
 def test_pages_availability_for_different_users(
-        parametrized_client, name, comment, expected_status
+        parametrized_client, name_url, expected_status
 ):
-    url = reverse(name, args=(comment.id,))
-    response = parametrized_client.get(url)
+    response = parametrized_client.get(name_url)
     assert response.status_code == expected_status
 
 
 @pytest.mark.parametrize(
-    'name',
-    ('news:edit', 'news:delete')
+    'name_url',
+    (
+        pytest.lazy_fixture('comment_edit_url'),
+        pytest.lazy_fixture('comment_delete_url')
+    )
 )
-def test_redirects(client, name, comment):
+def test_redirects(client, name_url):
     login_url = reverse('users:login')
-    url = reverse(name, args=(comment.id,))
-    expected_url = f'{login_url}?next={url}'
-    response = client.get(url)
+    expected_url = f'{login_url}?next={name_url}'
+    response = client.get(name_url)
     assertRedirects(response, expected_url)
