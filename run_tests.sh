@@ -22,7 +22,7 @@ then
     if python structure_test.py
     then
         cd ya_news
-        export DJANGO_SETTINGS_MODULE="${DJANGO_SETTINGS_MODULE:="yanews.settings"}"
+        export DJANGO_SETTINGS_MODULE="${DJANGO_SETTINGS_MODULE:="ourworld.settings"}"
         if pytest --tb=line 1>&2;
         then
             cd ../ya_note
@@ -39,7 +39,7 @@ then
             fi
         else
             status=$?
-            print_message " При запуске упали ваши тесты для проекта YaNews. Проверьте тесты этого проекта " "=" 1
+            print_message " При запуске упали ваши тесты для проекта OurWorld. Проверьте тесты этого проекта " "=" 1
             echo \`\`\` 1>&2
             exit $status
         fi
